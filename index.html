@@ -33,6 +33,20 @@
             font-size: 24px;
             pointer-events: none;
         }
+        .buttons{
+            padding: 20px;
+            margin: 10px;
+
+            background-color: black;
+            color: aliceblue;
+
+            cursor: pointer;
+        }
+        .points{
+            position: fixed;
+            right: 20px;
+            top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -43,13 +57,21 @@
         <p>MOUSE - Look around</p>
         <p>Click to lock/unlock mouse controls</p>
     </div> -->
+    <div class="points">
+        <div class="buttons">hall</div>
+        <div class="buttons">pool</div>
+        <div class="buttons">kitchen</div>
+        <div class="buttons">upperHall</div>
+        <div class="buttons">upperBed</div>
+    </div>
     <div id="crosshair">.</div>
 
     <script type="importmap">
         {
           "imports": {
             "three": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.module.js",
-            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.174.0/examples/jsm/"
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.174.0/examples/jsm/",
+            "camera-controls": "https://cdn.jsdelivr.net/npm/camera-controls@2.10.0/dist/camera-controls.module.min.js"
           }
         }
       </script>
