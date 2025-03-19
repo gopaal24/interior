@@ -6,6 +6,7 @@ import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import { SMAAPass } from "three/addons/postprocessing/SMAAPass.js";
 import { BokehPass } from "three/addons/postprocessing/BokehPass.js";
+import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 
 import gsap from "https://unpkg.com/gsap@3.12.5/index.js";
 import CameraControls from "camera-controls";
@@ -203,9 +204,18 @@ function pointerLockChange() {
   }
 }
 
-const loader = new GLTFLoader();
+const dracoLoader = new DRACOLoader();
 
-loader.load("./assets/parkedge_final.glb", function (gltf) {
+dracoLoader.setDecoderPath(
+  "https://www.gstatic.com/draco/versioned/decoders/1.5.6/"
+);
+
+dracoLoader.setDecoderConfig({ type: "js" });
+
+const loader = new GLTFLoader();
+loader.setDRACOLoader(dracoLoader);
+
+loader.load("./assets/house_model.glb", function (gltf) {
   const model = gltf.scene;
 
   model.traverse((object) => {
