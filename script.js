@@ -8,6 +8,10 @@ import { SMAAPass } from "three/addons/postprocessing/SMAAPass.js";
 import { BokehPass } from "three/addons/postprocessing/BokehPass.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 
+import Stats from 'three/addons/libs/stats.module.js'
+
+import {RGBELoader} from "three/addons/loaders/RGBELoader.js"
+
 import gsap from "https://unpkg.com/gsap@3.12.5/index.js";
 import CameraControls from "camera-controls";
 
@@ -17,6 +21,9 @@ const points = Array.from(document.querySelector(".points").children);
 let currentPos = "hall";
 
 const clock = new THREE.Clock();
+
+const stats = Stats()
+document.body.appendChild(stats.dom)
 
 let animating = true;
 const scene = new THREE.Scene();
@@ -83,6 +90,16 @@ const lockPointer = () => {
 //   moveToStartPoint();
 //   pathAnimation.play();
 // });
+
+let hdrMap = null;
+
+new RGBELoader().load('./assets/sky.hdr', function(texture){
+    texture.mapping = THREE.EquirectangularReflectionMapping;
+
+    hdrMap = texture;
+    scene.environment = texture;
+    scene.background = texture;
+})
 
 const positions = {
   hall: new THREE.Vector3(-6.415, 1.84, -0.255),
@@ -215,22 +232,124 @@ dracoLoader.setDecoderConfig({ type: "js" });
 const loader = new GLTFLoader();
 loader.setDRACOLoader(dracoLoader);
 
-loader.load("./assets/house_model.glb", function (gltf) {
+loader.load("./assets/home_interior.glb", function (gltf) {
   const model = gltf.scene;
 
   model.traverse((object) => {
     if (object.isMesh) {
       object.castShadow = true;
       object.receiveShadow = true;
+      
+      // Convert material to MeshStandardMaterial
       if (object.material) {
-        object.material.envMapIntensity = 1.5;
+        const oldMaterial = object.material;
+        
+        // Create a new standard material
+        const newMaterial = new THREE.MeshStandardMaterial({
+          map: oldMaterial.map, // Copy the texture map if it exists
+          color: oldMaterial.color ? oldMaterial.color : 0xffffff,
+          roughness: 0.7,
+          metalness: 0.1,
+        });
+
+        if (oldMaterial.transparent || (oldMaterial.map && oldMaterial.map.image && oldMaterial.map.image.hasAlpha)) {
+            // newMaterial.transparent = true;
+            newMaterial.alphaTest = 0.2; // Adjust this value as needed (0.0-1.0)
+            newMaterial.side = THREE.DoubleSide; // Often needed for transparent objects
+          }
+        
+        // Copy over any other textures that might exist
+        if (oldMaterial.normalMap) newMaterial.normalMap = oldMaterial.normalMap;
+        if (oldMaterial.aoMap) newMaterial.aoMap = oldMaterial.aoMap;
+        if (oldMaterial.roughnessMap) newMaterial.roughnessMap = oldMaterial.roughnessMap;
+        if (oldMaterial.metalnessMap) newMaterial.metalnessMap = oldMaterial.metalnessMap;
+        if (oldMaterial.emissiveMap) {
+          newMaterial.emissiveMap = oldMaterial.emissiveMap;
+          newMaterial.emissive = oldMaterial.emissive || new THREE.Color(0xffffff);
+          newMaterial.emissiveIntensity = oldMaterial.emissiveIntensity || 1.0;
+          newMaterial.envMap = hdrMap;
+          newMaterial.envMapIntensity = 10;
+        }
+        
+        // Replace the material
+        object.material = newMaterial;
+        console.log(object.name)
+        if (object.name === "Material-doors_windows_trans") {
+            // Create a glass-like material
+            const glassMaterial = new THREE.MeshPhysicalMaterial({
+              color: 0xffffff,
+              metalness: 0.4,
+              roughness: 0.05,
+              transmission: 0.95,  // High transmission for transparency
+              transparent: true,
+              opacity: 0.5,
+              reflectivity: 1.0,
+              envMap: hdrMap,
+              envMapIntensity: .8,
+              clearcoat: 1.0,
+              clearcoatRoughness: 0.1,
+              ior: 1.5,  // Similar to real glass
+              side: THREE.DoubleSide  // Render both sides
+            });
+            
+            // Apply the glass material
+            object.material = glassMaterial;
+            console.log("Glass material applied to:", object.name);
+          }
+        else if (object.name === "Material-light_pendants_trans") {
+            // Create a glass-like material
+            const glassMaterial = new THREE.MeshPhysicalMaterial({
+              color: 0xffffff,
+              metalness: 0.8,
+              roughness: 0.05,
+              transmission: 0.95,  // High transmission for transparency
+              transparent: true,
+              opacity: 0.5,
+              reflectivity: 1.0,
+              envMap: hdrMap,
+              envMapIntensity: .8,
+              clearcoat: 1.0,
+              clearcoatRoughness: 0.1,
+              ior: 1.5,  // Similar to real glass
+              side: THREE.DoubleSide  // Render both sides
+            });
+            
+            // Apply the glass material
+            object.material = glassMaterial;
+            console.log("Glass material applied to:", object.name);
+          }
+        else if (object.name === "bulb") {
+            // Create a glass-like material
+            const lightBulbMaterial = new THREE.MeshStandardMaterial({
+                color: 0xfcfcf0,       // Slightly off-white base color
+                metalness: 0.8,
+                roughness: 0.2,        // Slightly glossy
+                
+                // Strong emissive properties for the glow
+                emissive: 0xffffcc,    // Warm white light color
+                emissiveIntensity: 8.0, // Very bright emission
+                
+                // Optional: slight transparency for the bulb
+                // transparent: true,
+                // opacity: 0.9,
+                
+                // Environment map for some subtle reflections
+                envMap: hdrMap,
+                envMapIntensity: 0.3,  // Reduced environment map influence
+              });
+              
+              // Apply the light bulb material
+              object.material = lightBulbMaterial;
+              console.log("Light bulb material applied to:", object.name);
+          }
       }
+      
+      // console.log(object.material);
     }
   });
 
   scene.add(model);
 });
-
 document.addEventListener("mousemove", (event) => {
   if (fps.enabled) {
     const movementX =
@@ -298,13 +417,13 @@ document.addEventListener("keyup", (event) => {
   }
 });
 
-const ambient = new THREE.AmbientLight(0xfffff, 2);
+const ambient = new THREE.AmbientLight(0xffffff, 2);
 scene.add(ambient);
 
-const pointLight = new THREE.PointLight(0xffffaa, 1, 10);
-pointLight.castShadow = true;
-camera.add(pointLight);
-scene.add(camera);
+// const pointLight = new THREE.PointLight(0xffffaa, 1, 10);
+// pointLight.castShadow = true;
+// camera.add(pointLight);
+// scene.add(camera);
 
 window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -323,10 +442,52 @@ const smaaPass = new SMAAPass(window.innerWidth, window.innerHeight);
 const bloomPass = new UnrealBloomPass(
   new THREE.Vector2(window.innerWidth, window.innerHeight),
   0.25,
-  0.4,
+  0.1,
   0.1
 );
 composer.addPass(bloomPass);
+
+function getMaterialNameOnClick() {
+    // Create a raycaster
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    
+    // Add click event listener
+    window.addEventListener('click', (event) => {
+      // Calculate mouse position in normalized device coordinates
+      // (-1 to +1) for both components
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      
+      // Update the raycaster with the camera and mouse position
+      raycaster.setFromCamera(mouse, camera);
+      
+      // Calculate objects intersecting the picking ray
+      const intersects = raycaster.intersectObjects(scene.children, true);
+      
+      if (intersects.length > 0) {
+        // Get the first intersected object
+        const object = intersects[0].object;
+        
+        if (object.material) {
+          // Get material name (if available)
+          const materialName = object.name || "Unnamed material";
+          
+          console.log("Material name:", materialName);
+          console.log("Material type:", object.material.type);
+          console.log("Material:", object.material);
+          
+          // You can also log other material properties if needed
+          // console.log("Material properties:", object.material);
+          
+          return materialName;
+        }
+      }
+    });
+  }
+  
+  // Call this function after your scene is set up
+  getMaterialNameOnClick();
 
 const vignetteShader = {
   uniforms: {
@@ -473,6 +634,8 @@ function animate() {
       camera.position.y += fps.direction.y * speed;
     }
   }
+
+  stats.update()
 
   composer.render();
 }
