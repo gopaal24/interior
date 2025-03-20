@@ -275,8 +275,8 @@ loader.load("./assets/home_interior.glb", function (gltf) {
           newMaterial.emissiveMap = oldMaterial.emissiveMap;
           newMaterial.emissive = oldMaterial.emissive || new THREE.Color(0xffffff);
           newMaterial.emissiveIntensity = oldMaterial.emissiveIntensity || 1.0;
-          newMaterial.envMap = hdrMap;
-          newMaterial.envMapIntensity = 10;
+          // newMaterial.envMap = hdrMap;
+          // newMaterial.envMapIntensity = 1.2;
         }
         
         // Replace the material
@@ -292,8 +292,8 @@ loader.load("./assets/home_interior.glb", function (gltf) {
               transparent: true,
               opacity: 0.5,
               reflectivity: 1.0,
-              envMap: hdrMap,
-              envMapIntensity: .8,
+              // envMap: hdrMap,
+              // envMapIntensity: .8,
               clearcoat: 1.0,
               clearcoatRoughness: 0.1,
               ior: 1.5,  // Similar to real glass
@@ -307,14 +307,14 @@ loader.load("./assets/home_interior.glb", function (gltf) {
             // Create a glass-like material
             const glassMaterial = new THREE.MeshPhysicalMaterial({
               color: 0xffffff,
-              metalness: 0.8,
+              metalness: 0.6,
               roughness: 0.05,
               transmission: 0.95,  // High transmission for transparency
               transparent: true,
               opacity: 0.5,
-              reflectivity: 1.0,
-              envMap: hdrMap,
-              envMapIntensity: .8,
+              reflectivity: 0.5,
+              // envMap: hdrMap,
+              // envMapIntensity: .6,
               clearcoat: 1.0,
               clearcoatRoughness: 0.1,
               ior: 1.5,  // Similar to real glass
@@ -334,14 +334,6 @@ loader.load("./assets/home_interior.glb", function (gltf) {
                 // Strong emissive properties for the glow
                 emissive: 0xffffcc,    // Warm white light color
                 emissiveIntensity: 8.0, // Very bright emission
-                
-                // Optional: slight transparency for the bulb
-                // transparent: true,
-                // opacity: 0.9,
-                
-                // Environment map for some subtle reflections
-                envMap: hdrMap,
-                envMapIntensity: 0.3,  // Reduced environment map influence
               });
               
               // Apply the light bulb material
@@ -352,6 +344,7 @@ loader.load("./assets/home_interior.glb", function (gltf) {
           }
           else if(object.name.includes("Sofa")){
             sofa = object;
+            direction.lookAt(sofa.position)
           }
       }
     }
