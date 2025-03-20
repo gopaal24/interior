@@ -12,7 +12,6 @@ import Stats from 'three/addons/libs/stats.module.js'
 
 import {RGBELoader} from "three/addons/loaders/RGBELoader.js"
 
-import gsap from "https://unpkg.com/gsap@3.12.5/index.js";
 import CameraControls from "camera-controls";
 
 CameraControls.install({ THREE });
