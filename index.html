@@ -47,16 +47,39 @@
             right: 20px;
             top: 20px;
         }
+        .material-view-wrapper{
+            height: 100%;
+            width: 100%;
+
+            position: fixed;
+            top: 0;
+            left: 0;
+
+            display: none;
+        }
+
+        .material-view{
+            position: fixed;
+            bottom: 50px;
+            left: 50%;
+
+            transform: translateX(-50%);
+        }
+
+        .material-view > img {
+            width: 250px;
+            z-index: 1000;
+        }
+
     </style>
 </head>
 <body>
-    <!-- <div id="instructions">
-        <h3>FPS Controls:</h3>
-        <p>W, A, S, D - Move forward, left, backward, right</p>
-        <p>SPACE / SHIFT - Move up / down</p>
-        <p>MOUSE - Look around</p>
-        <p>Click to lock/unlock mouse controls</p>
-    </div> -->
+    <div class="material-view-wrapper">
+        <div class="material-view">
+            <img src="./assets/leather1/Leather027.png" id="leather1" alt="">
+            <img src="./assets/leather2/Leather037.png" id="leather2" alt="">
+        </div>
+    </div>
     <div class="points">
         <div class="buttons">hall</div>
         <div class="buttons">pool</div>

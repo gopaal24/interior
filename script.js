@@ -19,6 +19,12 @@ const points = Array.from(document.querySelector(".points").children);
 
 let currentPos = "hall";
 
+
+const leather1 = document.getElementById("leather1")
+const leather2 = document.getElementById("leather2")
+
+const leatherWrapper = document.querySelector(".material-view-wrapper")
+
 const clock = new THREE.Clock();
 
 const stats = Stats()
@@ -231,6 +237,9 @@ dracoLoader.setDecoderConfig({ type: "js" });
 const loader = new GLTFLoader();
 loader.setDRACOLoader(dracoLoader);
 
+const fans = []
+let sofa = null;
+
 loader.load("./assets/home_interior.glb", function (gltf) {
   const model = gltf.scene;
 
@@ -272,7 +281,7 @@ loader.load("./assets/home_interior.glb", function (gltf) {
         
         // Replace the material
         object.material = newMaterial;
-        console.log(object.name)
+        // console.log(object.name)
         if (object.name === "Material-doors_windows_trans") {
             // Create a glass-like material
             const glassMaterial = new THREE.MeshPhysicalMaterial({
@@ -293,7 +302,6 @@ loader.load("./assets/home_interior.glb", function (gltf) {
             
             // Apply the glass material
             object.material = glassMaterial;
-            console.log("Glass material applied to:", object.name);
           }
         else if (object.name === "Material-light_pendants_trans") {
             // Create a glass-like material
@@ -315,7 +323,6 @@ loader.load("./assets/home_interior.glb", function (gltf) {
             
             // Apply the glass material
             object.material = glassMaterial;
-            console.log("Glass material applied to:", object.name);
           }
         else if (object.name === "bulb") {
             // Create a glass-like material
@@ -339,16 +346,93 @@ loader.load("./assets/home_interior.glb", function (gltf) {
               
               // Apply the light bulb material
               object.material = lightBulbMaterial;
-              console.log("Light bulb material applied to:", object.name);
+          }
+          else if(object.name.includes("fanBlade")){
+            fans.push(object)
+          }
+          else if(object.name.includes("Sofa")){
+            sofa = object;
           }
       }
-      
-      // console.log(object.material);
     }
   });
 
   scene.add(model);
 });
+
+function spinFan(){
+  if(fans.length > 0){
+    fans.forEach((fan)=>{
+      fan.rotation.y += 0.1
+    })
+  }
+}
+
+const leatherMat1 = new THREE.MeshPhysicalMaterial()
+const leatherMat2 = new THREE.MeshPhysicalMaterial()
+
+function loadTextures(){
+  const textureLoader = new THREE.TextureLoader();
+  
+  const color = textureLoader.load("./assets/leather1/color.jpg");
+  color.wrapS = THREE.RepeatWrapping;
+  color.wrapT = THREE.RepeatWrapping;
+  color.repeat.set(10, 10);
+
+  const nrml = textureLoader.load("./assets/leather1/nrml.jpg");
+  nrml.wrapS = THREE.RepeatWrapping;
+  nrml.wrapT = THREE.RepeatWrapping;
+  nrml.repeat.set(10, 10);
+
+  const rough = textureLoader.load("./assets/leather1/rough.jpg");
+  rough.wrapS = THREE.RepeatWrapping;
+  rough.wrapT = THREE.RepeatWrapping;
+  rough.repeat.set(10, 10);
+
+  leatherMat1.map = color;
+  leatherMat1.normalMap = nrml
+  // leatherMat1.displacementMap = textureLoader.load("./assets/leather1/disp.jpg")
+  leatherMat1.roughnessMap = rough
+
+  const color2 = textureLoader.load("./assets/leather2/color.jpg");
+  color2.wrapS = THREE.RepeatWrapping;
+  color2.wrapT = THREE.RepeatWrapping;
+  color2.repeat.set(10, 10);
+
+  const nrml2 = textureLoader.load("./assets/leather2/nrml.jpg");
+  nrml2.wrapS = THREE.RepeatWrapping;
+  nrml2.wrapT = THREE.RepeatWrapping;
+  nrml2.repeat.set(10, 10);
+
+  const rough2 = textureLoader.load("./assets/leather2/rough.jpg");
+  rough2.wrapS = THREE.RepeatWrapping;
+  rough2.wrapT = THREE.RepeatWrapping;
+  rough2.repeat.set(10, 10);
+
+
+  leatherMat2.map = color2
+  leatherMat2.normalMap = nrml2
+  // leatherMat2.displacementMap = textureLoader.load("./assets/leather2/disp.jpg");
+  // leatherMat2.displacementBias = 0.001
+  leatherMat2.roughnessMap = rough2
+
+  console.log("textures loaded")
+}
+
+loadTextures()
+
+leather1.addEventListener("click", ()=>{
+  sofa.material = leatherMat1
+})
+
+leather2.addEventListener("click", ()=>{
+  sofa.material = leatherMat2
+})
+
+leatherWrapper.addEventListener("click", ()=>{
+  leatherWrapper.style.display = "none";
+})
+
 document.addEventListener("mousemove", (event) => {
   if (fps.enabled) {
     const movementX =
@@ -419,6 +503,9 @@ document.addEventListener("keyup", (event) => {
 const ambient = new THREE.AmbientLight(0xffffff, 2);
 scene.add(ambient);
 
+const direction = new THREE.DirectionalLight(0xffffff, 1.2);
+scene.add(direction)
+
 // const pointLight = new THREE.PointLight(0xffffaa, 1, 10);
 // pointLight.castShadow = true;
 // camera.add(pointLight);
@@ -467,19 +554,8 @@ function getMaterialNameOnClick() {
       if (intersects.length > 0) {
         // Get the first intersected object
         const object = intersects[0].object;
-        
-        if (object.material) {
-          // Get material name (if available)
-          const materialName = object.name || "Unnamed material";
-          
-          console.log("Material name:", materialName);
-          console.log("Material type:", object.material.type);
-          console.log("Material:", object.material);
-          
-          // You can also log other material properties if needed
-          // console.log("Material properties:", object.material);
-          
-          return materialName;
+        if(object.name.includes("Sofa")){
+          leatherWrapper.style.display = "block"
         }
       }
     });
@@ -635,6 +711,7 @@ function animate() {
   }
 
   stats.update()
+  spinFan();
 
   composer.render();
 }
