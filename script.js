@@ -8,14 +8,26 @@ import { SMAAPass } from "three/addons/postprocessing/SMAAPass.js";
 import { BokehPass } from "three/addons/postprocessing/BokehPass.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 
-import Stats from "three/addons/libs/stats.module.js";
-
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 
 import CameraControls from "camera-controls";
 
 CameraControls.install({ THREE });
 const points = Array.from(document.querySelector(".points").children);
+
+const loaderBtn = document.querySelector(".loader-btn");
+
+const manager = new THREE.LoadingManager();
+manager.onLoad = () => {
+  console.log("loaded");
+  document.querySelector(".loading-text").style.display = "none";
+  loaderBtn.style.display = "block";
+};
+
+loaderBtn.addEventListener("click", () => {
+  document.querySelector(".loader").style.display = "none";
+  document.querySelector(".points").style.display = "block";
+});
 
 let currentPos = "top";
 
@@ -25,9 +37,6 @@ const leather2 = document.getElementById("leather2");
 const leatherWrapper = document.querySelector(".material-view-wrapper");
 
 const clock = new THREE.Clock();
-
-const stats = Stats();
-document.body.appendChild(stats.dom);
 
 let animating = true;
 const scene = new THREE.Scene();
@@ -246,7 +255,7 @@ dracoLoader.setDecoderPath(
 
 dracoLoader.setDecoderConfig({ type: "js" });
 
-const loader = new GLTFLoader();
+const loader = new GLTFLoader(manager);
 loader.setDRACOLoader(dracoLoader);
 
 const fans = [];
@@ -719,7 +728,6 @@ function animate() {
     }
   }
 
-  stats.update();
   spinFan();
 
   composer.render();

@@ -154,6 +154,187 @@
                 bottom: 20px;
             }
         }
+
+        .loading-text{
+            color: rgb(51, 133, 255)!important;
+        }
+        
+        .spinner-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color:rgb(230, 244, 252);
+            z-index: 999999;
+        }
+        
+        .sk-folding-cube {
+            position: absolute;
+            top: 48%;
+            left: 48%;
+            width: 80px;
+            height: 80px;
+            -webkit-transform: rotateZ(45deg);
+            transform: rotateZ(45deg);
+        }
+        
+        .sk-folding-cube .sk-cube {
+            float: left;
+            width: 50%;
+            height: 50%;
+            position: relative;
+            -webkit-transform: scale(1.1);
+            -ms-transform: scale(1.1);
+            transform: scale(1.1);
+        }
+        
+        .sk-folding-cube .sk-cube:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgb(51, 133, 255);
+            -webkit-animation: sk-foldCubeAngle 2.4s infinite linear both;
+            animation: sk-foldCubeAngle 2.4s infinite linear both;
+            -webkit-transform-origin: 100% 100%;
+            -ms-transform-origin: 100% 100%;
+            transform-origin: 100% 100%;
+        }
+
+        .loader-btn{
+            display: none;
+            background-color: rgb(51, 133, 255);;
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .loader-text{
+            position: absolute;
+            top: 65%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: White;
+            font-size: 20px;
+        }
+        
+        .sk-folding-cube .sk-cube2 {
+            -webkit-transform: scale(1.1) rotateZ(90deg);
+            transform: scale(1.1) rotateZ(90deg);
+        }
+        
+        .sk-folding-cube .sk-cube3 {
+            -webkit-transform: scale(1.1) rotateZ(180deg);
+            transform: scale(1.1) rotateZ(180deg);
+        }
+        
+        .sk-folding-cube .sk-cube4 {
+            -webkit-transform: scale(1.1) rotateZ(270deg);
+            transform: scale(1.1) rotateZ(270deg);
+        }
+        
+        .sk-folding-cube .sk-cube2:before {
+            -webkit-animation-delay: 0.3s;
+            animation-delay: 0.3s;
+        }
+        
+        .sk-folding-cube .sk-cube3:before {
+            -webkit-animation-delay: 0.6s;
+            animation-delay: 0.6s;
+        }
+        
+        .sk-folding-cube .sk-cube4:before {
+            -webkit-animation-delay: 0.9s;
+            animation-delay: 0.9s;
+        }
+        
+        @-webkit-keyframes sk-foldCubeAngle {
+            0%,
+            10% {
+            -webkit-transform: perspective(140px) rotateX(-180deg);
+            transform: perspective(140px) rotateX(-180deg);
+            opacity: 0;
+            }
+            25%,
+            75% {
+            -webkit-transform: perspective(140px) rotateX(0deg);
+            transform: perspective(140px) rotateX(0deg);
+            opacity: 1;
+            }
+            90%,
+            100% {
+            -webkit-transform: perspective(140px) rotateY(180deg);
+            transform: perspective(140px) rotateY(180deg);
+            opacity: 0;
+            }
+        }
+        
+        @keyframes sk-foldCubeAngle {
+            0%,
+            10% {
+            -webkit-transform: perspective(140px) rotateX(-180deg);
+            transform: perspective(140px) rotateX(-180deg);
+            opacity: 0;
+            }
+            25%,
+            75% {
+            -webkit-transform: perspective(140px) rotateX(0deg);
+            transform: perspective(140px) rotateX(0deg);
+            opacity: 1;
+            }
+            90%,
+            100% {
+            -webkit-transform: perspective(140px) rotateY(180deg);
+            transform: perspective(140px) rotateY(180deg);
+            opacity: 0;
+            }
+        }
+
+        /* Default styles remain unchanged */
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .spinner-wrapper {
+                padding: 20px; /* Adds padding for smaller screens */
+            }
+
+            .sk-folding-cube {
+                width: 60px;
+                height: 60px;
+            }
+
+            .loader-text {
+                font-size: 16px;
+                white-space: nowrap; /* Prevents text from wrapping */
+            }
+
+            .loader-btn {
+                font-size: 14px;
+                padding: 12px 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sk-folding-cube {
+                width: 50px;
+                height: 50px;
+            }
+
+            .loader-text {
+                font-size: 14px;
+            }
+
+            .loader-btn {
+                font-size: 12px;
+                padding: 10px 16px;
+            }
+        }
+
+
+        
     </style>
 </head>
 <body>
@@ -170,7 +351,19 @@
         <div class="buttons">upperHall</div>
         <div class="buttons">upperBed</div>
     </div>
-    <div id="crosshair">.</div>
+
+    <div class="spinner-wrapper loader">
+        <div class="spinner">
+          <div class="sk-folding-cube">
+            <div class="sk-cube1 sk-cube"></div>
+            <div class="sk-cube2 sk-cube"></div>
+            <div class="sk-cube4 sk-cube"></div>
+            <div class="sk-cube3 sk-cube"></div>
+          </div>
+          <div class="loader-text loading-text">Preparing your Virtual Store</div>
+          <div class="loader-text loader-btn">Click to Enter</div>
+        </div>
+       </div>
 
     <script type="importmap">
         {
