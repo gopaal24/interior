@@ -194,6 +194,16 @@ const pathAnimation = gsap.fromTo(
       const cameraZ = _tmp.z;
 
       controls.moveTo(cameraX, cameraY, cameraZ, false);
+      curve.getPoint(Math.min(value + 0.05, 1), _tmp);
+      controls.setLookAt(
+        cameraX,
+        cameraY,
+        cameraZ,
+        _tmp.x,
+        _tmp.y,
+        _tmp.z,
+        true
+      );
     },
 
     onStart() {
@@ -206,7 +216,7 @@ const pathAnimation = gsap.fromTo(
       const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(
         controls.camera.quaternion
       );
-      const newTarget = cameraPosition.clone().add(forward.multiplyScalar(0.1));
+      const newTarget = cameraPosition.clone().add(forward.multiplyScalar(0.5));
       controls.setTarget(newTarget.x, newTarget.y, newTarget.z, true);
     },
   }
