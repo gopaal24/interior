@@ -9,9 +9,12 @@
             margin: 0; 
             overflow: hidden; 
             font-family: Arial, sans-serif;
+            touch-action: none; /* Prevents default touch actions like scrolling */
         }
         canvas { 
             display: block; 
+            width: 100%;
+            height: 100%;
         }
         #instructions {
             position: absolute;
@@ -22,7 +25,7 @@
             padding: 10px;
             border-radius: 5px;
             font-size: 14px;
-            max-width: 400px;
+            max-width: 90%;
         }
         #crosshair {
             position: absolute;
@@ -33,44 +36,124 @@
             font-size: 24px;
             pointer-events: none;
         }
-        .buttons{
-            padding: 20px;
-            margin: 10px;
-
+        .buttons {
+            padding: 15px;
+            margin: 5px;
             background-color: black;
             color: aliceblue;
-
             cursor: pointer;
+            text-align: center;
+            border-radius: 10px;
+            font-size: 16px;
+            min-width: 80px;
         }
-        .points{
+        .points {
             position: fixed;
             right: 20px;
             top: 20px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
         }
-        .material-view-wrapper{
+        .material-view-wrapper {
             height: 100%;
             width: 100%;
-
             position: fixed;
             top: 0;
             left: 0;
-
             display: none;
         }
-
-        .material-view{
+        .material-view {
             position: fixed;
             bottom: 50px;
             left: 50%;
-
             transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
         }
-
         .material-view > img {
-            width: 250px;
+            width: 120px;
             z-index: 1000;
         }
 
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .points {
+                position: fixed;
+                bottom: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                top: auto;
+                right: auto;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 10px;
+                width: 90%;
+                justify-content: center;
+                background: rgba(0, 0, 0, 0.7);
+                padding: 5px;
+                border-radius: 10px;
+            }
+            .buttons {
+                padding: 10px;
+                font-size: 14px;
+                min-width: 60px;
+                flex-grow: 1;
+                margin: 3px;
+            }
+            .material-view > img {
+                width: 80px;
+            }
+        }
+
+        @media (max-width: 768px) and (orientation: portrait) {
+            body::before {
+                content: "Rotate your device for the best experience!";
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 10px 20px;
+                font-size: 18px;
+                text-align: center;
+                z-index: 10000;
+                border-radius: 10px;
+                width: 80%;
+            }
+        }
+        
+        /* Small phones */
+        @media (max-width: 380px) {
+            .buttons {
+                padding: 8px;
+                font-size: 12px;
+                min-width: 40px;
+            }
+            .material-view > img {
+                width: 60px;
+            }
+        }
+        
+        /* Landscape orientation on mobile */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .points {
+                right: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                left: auto;
+                bottom: auto;
+                flex-direction: column;
+                width: auto;
+                background: rgba(0, 0, 0, 0.7);
+                padding: 5px;
+                border-radius: 10px;
+            }
+            .material-view {
+                bottom: 20px;
+            }
+        }
     </style>
 </head>
 <body>
